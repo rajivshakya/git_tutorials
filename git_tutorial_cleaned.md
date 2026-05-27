@@ -3581,36 +3581,150 @@ Very common during:
 
 ---
 
-# 10. git diff
+# 10.# git diff Command in Git
 
-## Interview Question: What is `git diff`?
+`git diff` is used to compare changes in Git.
+It shows the line-by-line differences between files, commits, branches, or different Git areas.
 
-Shows differences between changes.
+# Basic Syntax
+
+```bash
+git diff
+```
+
+This command shows the difference between:
+
+* the **working directory**
+* and the **staging area**
+
+It means:
+
+* changes you made in files
+* but have NOT added using `git add`
 
 ---
 
 # Example
 
-```bash id="w9m3q6"
+Suppose a file contains:
+
+```txt
+Hello World
+```
+
+After modification:
+
+```txt
+Hello Git
+```
+
+Now run:
+
+```bash
 git diff
+```
+
+Output:
+
+```diff
+-Hello World
++Hello Git
+```
+
+## Meaning
+
+* `-` → removed line
+* `+` → added line
+
+---
+
+# Important Variations
+
+## 1. Show Unstaged Changes
+
+```bash
+git diff
+```
+
+Shows changes that are modified but not staged.
+
+---
+
+## 2. Show Staged Changes
+
+```bash
+git diff --staged
+```
+
+or
+
+```bash
+git diff --cached
+```
+
+Shows changes that are already added using `git add` and will be included in the next commit.
+
+---
+
+## 3. Compare Two Branches
+
+```bash
+git diff main feature
+```
+
+Shows differences between the `main` branch and `feature` branch.
+
+---
+
+## 4. Compare Two Commits
+
+```bash
+git diff commit1 commit2
+```
+
+Example:
+
+```bash
+git diff a1b2c3 d4e5f6
 ```
 
 ---
 
-# What Happens?
+## 5. Compare a Specific File
 
-Git compares:
+```bash
+git diff file.txt
+```
 
-* current changes
-* previous commit/staging
+---
+
+# Real-Time Use Cases
+
+`git diff` is commonly used for:
+
+* reviewing code changes
+* troubleshooting issues
+* verifying changes before deployment
+* checking configuration updates
+* pull request/code review process
 
 ---
 
-# Industry Use Case
+# Interview Question
 
-Used before commit to verify changes.
+## What is the difference between `git status` and `git diff`?
+
+### Answer:
+
+* `git status` → shows which files are changed
+* `git diff` → shows the actual line-by-line changes inside files
 
 ---
+
+# Short Definition
+
+> `git diff` is used to compare changes between the working directory, staging area, commits, or branches in Git.
+
 
 # 11. git reset
 

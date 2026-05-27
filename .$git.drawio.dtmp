@@ -1,0 +1,58 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="PlC7FybXFST1QlI6-cu3">
+    <mxGraphModel dx="773" dy="502" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-14" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="" vertex="1">
+          <mxGeometry height="360" width="400" x="80" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-1" parent="1" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.git_repository;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="350" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" value="Working Area" vertex="1">
+          <mxGeometry height="50" width="150" x="90" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-8" edge="1" parent="1" source="8JJgSllMfCTPrx9a4ufz-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;flowAnimation=1;" target="8JJgSllMfCTPrx9a4ufz-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" value="Staging&amp;nbsp; Area" vertex="1">
+          <mxGeometry height="50" width="150" x="160" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="GitHub Repo" vertex="1">
+          <mxGeometry height="80" width="150" x="530" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-9" edge="1" parent="1" source="8JJgSllMfCTPrx9a4ufz-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;flowAnimation=1;" target="8JJgSllMfCTPrx9a4ufz-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" value="Loca Repository" vertex="1">
+          <mxGeometry height="50" width="150" x="240" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-7" edge="1" parent="1" source="8JJgSllMfCTPrx9a4ufz-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.429;entryY=-0.04;entryDx=0;entryDy=0;entryPerimeter=0;flowAnimation=1;" target="8JJgSllMfCTPrx9a4ufz-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=#d6b656;fillColor=#fff2cc;align=center;verticalAlign=middle;rounded=0;fontStyle=1" value="git add" vertex="1">
+          <mxGeometry height="30" width="60" x="150" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=#d6b656;fillColor=#fff2cc;align=center;verticalAlign=middle;rounded=0;fontStyle=1" value="git commit" vertex="1">
+          <mxGeometry height="30" width="70" x="210" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=#d6b656;fillColor=#fff2cc;align=center;verticalAlign=middle;rounded=0;fontStyle=1" value="git push" vertex="1">
+          <mxGeometry height="30" width="60" x="570" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-2" parent="1" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.github_code;pointerEvents=1;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="530" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-16" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;rounded=0;fontStyle=1;fillColor=#f9f7ed;strokeColor=#36393d;" value="Local Folder" vertex="1">
+          <mxGeometry height="30" width="105" x="210" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-17" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;rounded=0;fontStyle=1;fillColor=#f9f7ed;strokeColor=#36393d;" value="remote/internet" vertex="1">
+          <mxGeometry height="30" width="105" x="552.5" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="8JJgSllMfCTPrx9a4ufz-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=#36393d;fillColor=#ffff88;align=center;verticalAlign=middle;rounded=0;fontStyle=0" value="write the code" vertex="1">
+          <mxGeometry height="30" width="95" x="110" y="220" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
