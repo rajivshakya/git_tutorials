@@ -261,11 +261,132 @@ Output:
 * A Initial Commit
 ```
 
-# Git Rebase command
+# Git Rebase Explained with Practical Example
 
-Let's use the same history before merge.
+## What is Git Rebase?
+
+Git Rebase is used to move or replay commits from one branch on top of another branch.
+
+In simple words:
+
+> Git Rebase takes the commits from your current branch and replays them on top of another branch.
+
+The main purpose of rebase is to create a clean and linear commit history.
+
+---
+
+# Why Do We Use Rebase?
+
+Suppose you are working on a feature branch.
+
+While you are developing your feature, other developers continue pushing changes to the main branch.
+
+Before creating a Pull Request, you may want your feature branch to include the latest changes from main.
+
+This is where Git Rebase is commonly used.
+
+---
+
+# Practical Example
+
+## Step 1: Create Repository
+
+```bash
+git init
+
+echo "Version 1" > app.txt
+git add .
+git commit -m "Initial Commit"
+```
+
+History:
+
+```text
+A
+↑
+main
+```
+
+---
+
+## Step 2: Add Commits to Main Branch
+
+```bash
+git commit -m "Added README"
+git commit -m "Added Application Code"
+```
+
+History:
+
+```text
+A --- B --- C
+            ↑
+          main
+```
+
+Where:
+
+```text
+A = Initial Commit
+B = Added README
+C = Added Application Code
+```
+
+---
+
+## Step 3: Create Feature Branch
+
+```bash
+git checkout -b feature
+```
 
 Current History:
+
+```text
+A --- B --- C
+            ↑
+      main, feature
+```
+
+---
+
+## Step 4: Add Commits on Feature Branch
+
+```bash
+git commit -m "Feature Commit 1"
+git commit -m "Feature Commit 2"
+git commit -m "Feature Commit 3"
+```
+
+History:
+
+```text
+A --- B --- C --- D --- E --- F
+                              ↑
+                           feature
+
+            ↑
+          main
+```
+
+---
+
+## Step 5: Main Branch Receives New Commits
+
+Switch back to main:
+
+```bash
+git checkout main
+```
+
+Add new commits:
+
+```bash
+git commit -m "Main Commit 1"
+git commit -m "Main Commit 2"
+```
+
+History becomes:
 
 ```text
 A --- B --- C --- G --- H
@@ -277,6 +398,12 @@ A --- B --- C --- G --- H
                          ↑
                       feature
 ```
+
+Now the feature branch is behind the main branch.
+
+---
+
+# Rebase Feature Branch with Main
 
 Switch to feature:
 
@@ -338,7 +465,7 @@ A --- B --- C --- G --- H --- D' --- E' --- F'
 
 ---
 
-# Result After Rebase
+# Final Result
 
 ```text
 A --- B --- C --- G --- H --- D' --- E' --- F'
@@ -346,19 +473,11 @@ A --- B --- C --- G --- H --- D' --- E' --- F'
                                          feature
 ```
 
-Notice:
-
-```text
-D' ≠ D
-E' ≠ E
-F' ≠ F
-```
-
-Git recreated all feature commits because their parent commits changed.
+History is now completely linear.
 
 ---
 
-# Why Does Rebase Create New Commits?
+# Why Are New Commits Created?
 
 Before Rebase:
 
@@ -376,17 +495,25 @@ E' Parent = D'
 F' Parent = E'
 ```
 
-Since parent commits changed, Git had to create new commits with new commit hashes.
+Because the parent commits changed, Git creates new commits with new commit hashes.
+
+That is why:
+
+```text
+D' ≠ D
+E' ≠ E
+F' ≠ F
+```
 
 ---
 
-## Verify
+# Verify the Result
 
 ```bash
 git log --oneline --graph
 ```
 
-Output:
+Example Output:
 
 ```text
 * F' Feature Commit 3
@@ -398,3 +525,66 @@ Output:
 * B Added README
 * A Initial Commit
 ```
+
+---
+
+# Advantages of Git Rebase
+
+- Creates a clean commit history.
+- Removes unnecessary merge commits.
+- Makes Git logs easier to read.
+- Useful before creating Pull Requests.
+
+---
+
+# Disadvantages of Git Rebase
+
+- Rewrites commit history.
+- Can be risky on shared branches.
+- Often requires force push after rebasing.
+
+---
+
+# Golden Rule of Rebase
+
+Never rebase a branch that has already been shared with other developers.
+
+Avoid:
+
+```bash
+git rebase main
+git push --force
+```
+
+unless you fully understand the consequences.
+
+---
+
+# Common Real-World Workflow
+
+```bash
+git checkout feature
+
+git fetch origin
+
+git rebase origin/main
+```
+
+Resolve conflicts if any:
+
+```bash
+git add .
+git rebase --continue
+```
+
+Push changes:
+
+```bash
+git push --force-with-lease
+```
+
+---
+
+# Interview Answer
+
+Git Rebase is used to move or replay commits from one branch on top of another branch. It rewrites commit history by recreating commits with new parent commits, resulting in a clean and linear commit history without creating merge commits.
