@@ -2,21 +2,22 @@
 
 ## Answer
 
-Both **Git Merge** and **Git Rebase** are used to integrate changes from one branch into another branch. However, they handle commit history differently.
+Both **Git Merge** and **Git Rebase** are used to integrate changes from one branch into another branch.
 
-- **Git Merge** preserves branch history and creates a merge commit.
+The major difference is:
+
+- **Git Merge** preserves branch history.
 - **Git Rebase** rewrites commit history and creates a clean linear history.
+
+Before understanding Merge vs Rebase, it is important to understand **Fast-Forward Merge** and **Non-Fast-Forward Merge**.
 
 ---
 
-# Practical Hands-On Example
+# Scenario 1: Fast-Forward Merge
 
-## Step 1: Create a New Repository
+## Step 1: Initial Repository
 
 ```bash
-mkdir git-demo
-cd git-demo
-
 git init
 
 echo "Version 1" > app.txt
@@ -24,45 +25,136 @@ git add .
 git commit -m "Initial Commit"
 ```
 
-Current History:
+History:
 
 ```text
 A
+↑
+main
 ```
 
----
-
-## Step 2: Create a Feature Branch
+Create a feature branch:
 
 ```bash
 git checkout -b feature
 ```
 
-Add a commit:
+Add two commits:
 
 ```bash
 echo "Feature Change 1" >> app.txt
-git add .
-git commit -m "Feature Commit 1"
+git commit -am "Feature Commit 1"
+
+echo "Feature Change 2" >> app.txt
+git commit -am "Feature Commit 2"
+```
+
+History:
+
+```text
+A --- B --- C
+↑           ↑
+main      feature
+```
+
+Main branch is still at A.
+
+---
+
+## Merge Feature into Main
+
+Switch to main:
+
+```bash
+git checkout main
+```
+
+Merge feature:
+
+```bash
+git merge feature
+```
+
+---
+
+## Result
+
+```text
+A --- B --- C
+            ↑
+     main, feature
+```
+
+Git simply moves the main pointer from A to C.
+
+### Important Point
+
+No merge commit is created.
+
+This is called a **Fast-Forward Merge** because Git can simply move the branch pointer forward.
+
+---
+
+## Verify
+
+```bash
+git log --oneline --graph
+```
+
+Output:
+
+```text
+* C Feature Commit 2
+* B Feature Commit 1
+* A Initial Commit
+```
+
+Notice:
+
+There is no merge commit.
+
+---
+
+# Scenario 2: Non-Fast-Forward Merge (3-Way Merge)
+
+This is where Git creates a merge commit.
+
+---
+
+## Step 1: Initial History
+
+```text
+A
+↑
+main
+```
+
+Create feature branch:
+
+```bash
+git checkout -b feature
+```
+
+Add commit:
+
+```bash
+echo "Feature Change" >> app.txt
+git commit -am "Feature Commit"
 ```
 
 History:
 
 ```text
 A --- B
-```
-
-Where:
-
-```text
-B = Feature Commit 1
+      ↑
+   feature
 ```
 
 ---
 
-## Step 3: Add a Commit to Main Branch
+## Step 2: Add Commit to Main
 
-Switch to main branch:
+Switch to main:
 
 ```bash
 git checkout main
@@ -71,64 +163,59 @@ git checkout main
 Add another commit:
 
 ```bash
-echo "Main Change 1" >> app.txt
-git add .
-git commit -m "Main Commit 1"
+echo "Main Change" >> app.txt
+git commit -am "Main Commit"
 ```
 
-History now becomes:
+History becomes:
 
 ```text
-        B
-       /
-A ---- C
+A --- C
+↑
+main
+
+ \
+  B
+  ↑
+feature
 ```
 
-Where:
+Or:
 
 ```text
-B = Feature Commit 1
-C = Main Commit 1
+A --- C
+ \     
+  B
 ```
 
-Now the feature branch and main branch have diverged.
+Now both branches have different commits.
+
+Branches have diverged.
 
 ---
 
-# Git Merge
+## Step 3: Merge Feature into Main
 
-## Command
-
-Switch to feature branch:
+Switch to main:
 
 ```bash
-git checkout feature
+git checkout main
 ```
 
-Merge main branch:
+Run:
 
 ```bash
-git merge main
+git merge feature
 ```
 
 ---
 
-## Before Merge
+## Result
 
 ```text
-        B
-       /
-A ---- C
-```
-
----
-
-## After Merge
-
-```text
-        B -------- M
-       /          /
-A ---- C --------
+A -------- C -------- M
+ \                  /
+  B ---------------
 ```
 
 Where:
@@ -137,59 +224,53 @@ Where:
 M = Merge Commit
 ```
 
-Git creates an additional merge commit to combine both branches.
+Git cannot simply move the branch pointer.
+
+Git must combine changes from both branches.
+
+Therefore Git creates a new merge commit.
 
 ---
 
-## Verify History
+## Verify
 
 ```bash
 git log --oneline --graph
 ```
 
-Example Output:
+Output:
 
 ```text
-*   M Merge branch 'main'
+*   M Merge branch 'feature'
 |\
-| * C Main Commit 1
-* | B Feature Commit 1
+| * B Feature Commit
+* | C Main Commit
 |/
 * A Initial Commit
 ```
 
 ---
 
-## Advantages of Merge
-
-- Preserves complete history.
-- Easy to track branch relationships.
-- Safe for shared branches.
-- No history rewriting.
-
----
-
-## Disadvantages of Merge
-
-- Creates extra merge commits.
-- History can become cluttered.
-
-Example:
-
-```text
-Merge branch 'main'
-Merge branch 'release'
-Merge branch 'hotfix'
-Merge branch 'feature'
-```
-
----
-
 # Git Rebase
 
-Instead of merge, let's use rebase.
+Now let's use the same diverged history.
 
-Switch to feature branch:
+Before Rebase:
+
+```text
+A --- C
+ \
+  B
+```
+
+Where:
+
+```text
+main    = C
+feature = B
+```
+
+Switch to feature:
 
 ```bash
 git checkout feature
@@ -203,44 +284,34 @@ git rebase main
 
 ---
 
-## What Happens Internally?
+# What Happens Internally?
 
-### Original History
-
-```text
-        B
-       /
-A ---- C
-```
-
----
-
-### Step 1
+## Step 1
 
 Git temporarily removes commit B.
 
 ```text
-A ---- C
+A --- C
 ```
 
 ---
 
-### Step 2
+## Step 2
 
-Git moves the feature branch pointer to commit C.
+Git moves the feature branch to C.
 
 ```text
-A ---- C
+A --- C
 ```
 
 ---
 
-### Step 3
+## Step 3
 
-Git reapplies commit B on top of C.
+Git reapplies B on top of C.
 
 ```text
-A ---- C ---- B'
+A --- C --- B'
 ```
 
 Notice:
@@ -249,78 +320,126 @@ Notice:
 B' ≠ B
 ```
 
-Git creates a brand-new commit with a new commit hash.
+Git creates a brand-new commit.
+
+The commit content remains the same, but the commit hash changes.
 
 ---
 
-## After Rebase
+# Result After Rebase
 
 ```text
-A ---- C ---- B'
+A --- C --- B'
 ```
 
-History becomes linear.
-
----
-
-## Verify History
-
-```bash
-git log --oneline --graph
-```
-
-Example Output:
-
-```text
-* B' Feature Commit 1
-* C Main Commit 1
-* A Initial Commit
-```
+History becomes completely linear.
 
 No merge commit is created.
 
 ---
 
-# Visual Comparison
+## Verify
 
-## Git Merge
-
-```text
-        B
-       /
-A ---- C
-       \
-        M
+```bash
+git log --oneline --graph
 ```
 
-History preserves branching.
+Output:
+
+```text
+* B' Feature Commit
+* C Main Commit
+* A Initial Commit
+```
 
 ---
 
-## Git Rebase
+# Visual Comparison
+
+## Fast-Forward Merge
+
+Before:
 
 ```text
-A ---- C ---- B'
+A --- B --- C
+↑           ↑
+main      feature
 ```
 
-History becomes linear.
+After:
+
+```text
+A --- B --- C
+            ↑
+     main, feature
+```
+
+No merge commit.
+
+---
+
+## Non-Fast-Forward Merge
+
+Before:
+
+```text
+A --- C
+
+ \
+  B
+```
+
+After:
+
+```text
+A -------- C -------- M
+ \                  /
+  B ---------------
+```
+
+Merge commit created.
+
+---
+
+## Rebase
+
+Before:
+
+```text
+A --- C
+
+ \
+  B
+```
+
+After:
+
+```text
+A --- C --- B'
+```
+
+No merge commit.
+
+Linear history.
 
 ---
 
 # Real DevOps Example
 
-Suppose another engineer pushes commits to main while you are working on a feature branch.
+Suppose while working on a Terraform feature branch, other team members push commits to main.
 
-### Main Branch
+Main:
 
 ```text
-A ---- B ---- C
+A --- B --- C
 ```
 
-### Feature Branch
+Feature:
 
 ```text
-A ---- D ---- E
+A
+ \
+  D --- E
 ```
 
 ---
@@ -335,10 +454,12 @@ git merge main
 Result:
 
 ```text
-          D ---- E
-         /        \
-A ---- B ---- C ---- M
+A --- B --- C -------- M
+ \                   /
+  D --- E ----------
 ```
+
+History preserved.
 
 ---
 
@@ -352,53 +473,10 @@ git rebase main
 Result:
 
 ```text
-A ---- B ---- C ---- D' ---- E'
+A --- B --- C --- D' --- E'
 ```
 
-The history is much cleaner.
-
----
-
-# Merge Conflict During Rebase
-
-Suppose both branches modify the same line.
-
-Main branch:
-
-```text
-Application Version = 2
-```
-
-Feature branch:
-
-```text
-Application Version = 3
-```
-
-Run:
-
-```bash
-git rebase main
-```
-
-Git may stop with a conflict.
-
-Check the conflict:
-
-```bash
-git status
-```
-
-Fix the file manually.
-
-After fixing:
-
-```bash
-git add .
-git rebase --continue
-```
-
-Git continues the rebase process.
+History becomes linear and cleaner.
 
 ---
 
@@ -407,14 +485,13 @@ Git continues the rebase process.
 Use Merge when:
 
 - Working on shared branches.
-- Multiple developers collaborate on the same branch.
 - History preservation is important.
-- You do not want to rewrite history.
+- Multiple developers work on the same branch.
 
 Example:
 
 ```bash
-git merge main
+git merge feature
 ```
 
 ---
@@ -423,10 +500,9 @@ git merge main
 
 Use Rebase when:
 
-- Updating a feature branch before creating a Pull Request.
+- Updating your feature branch with latest main branch changes.
 - Keeping Git history clean.
-- Working on your own feature branch.
-- You want a linear commit history.
+- Preparing a Pull Request.
 
 Example:
 
@@ -449,7 +525,7 @@ git push --force
 
 unless you fully understand the impact.
 
-Because rebase rewrites commit history, other team members may face issues when pulling changes.
+Because rebase rewrites commit history.
 
 ---
 
@@ -457,7 +533,8 @@ Because rebase rewrites commit history, other team members may face issues when 
 
 | Feature | Merge | Rebase |
 |----------|--------|---------|
-| Creates Merge Commit | Yes | No |
+| Creates Merge Commit | Sometimes | No |
+| Fast-Forward Possible | Yes | N/A |
 | Rewrites History | No | Yes |
 | Preserves Branch Structure | Yes | No |
 | Linear History | No | Yes |
@@ -468,12 +545,6 @@ Because rebase rewrites commit history, other team members may face issues when 
 
 # Interview Answer (Short Version)
 
-Git Merge combines branches while preserving history and creating a merge commit.
+Git Merge combines branches and preserves history. If the branches have not diverged, Git performs a Fast-Forward Merge without creating a merge commit. If the branches have diverged, Git performs a Non-Fast-Forward Merge and creates a merge commit.
 
 Git Rebase moves commits from one branch on top of another branch, rewrites history, and creates a clean linear commit history without creating merge commits.
-
----
-
-# Interview One-Liner
-
-Git Merge preserves branch history by creating a merge commit, whereas Git Rebase rewrites history by replaying commits on top of another branch to create a clean and linear commit history.
