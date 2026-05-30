@@ -5166,3 +5166,277 @@ For shared repositories, `git revert` is usually safer.
 - `git revert` is the safest way to undo commits in shared repositories.
 - `git reset` is powerful for local history rewriting but should be used carefully, especially after pushing commits.
 
+# Git Squash
+
+## What is Git Squash?
+
+Git Squash is a technique used to combine multiple commits into a single commit. It is commonly used to keep the Git history clean and readable before merging a feature branch into the main branch.
+
+Instead of keeping many small commits such as bug fixes, typo corrections, formatting changes, and code cleanup, Git allows us to merge them into one meaningful commit.
+
+---
+
+## Why Do We Use Squash?
+
+During development, developers often create multiple commits:
+
+```bash
+git commit -m "Added login page"
+git commit -m "Fixed validation bug"
+git commit -m "Updated CSS"
+git commit -m "Fixed typo"
+git commit -m "Removed debug code"
+```
+
+These commits are useful while developing, but they can make the repository history cluttered.
+
+Using squash, all these commits can be combined into a single commit:
+
+```bash
+git commit -m "Implemented User Login Feature"
+```
+
+This makes the Git history easier to understand and maintain.
+
+---
+
+## Example Scenario
+
+Suppose the feature branch contains the following commits:
+
+```text
+A --- B --- C --- D --- E
+```
+
+Where:
+
+```text
+B = Added login page
+C = Fixed validation bug
+D = Updated CSS
+E = Removed debug code
+```
+
+After squashing:
+
+```text
+A --- F
+```
+
+Where:
+
+```text
+F = Implemented User Login Feature
+```
+
+Git combines the changes from B, C, D, and E into a brand-new commit F.
+
+---
+
+## Squashing Commits Using Interactive Rebase
+
+To squash the last 4 commits:
+
+```bash
+git rebase -i HEAD~4
+```
+
+Git opens an editor:
+
+```text
+pick a111 Added login page
+pick b222 Fixed validation bug
+pick c333 Updated CSS
+pick d444 Removed debug code
+```
+
+Change it to:
+
+```text
+pick a111 Added login page
+squash b222 Fixed validation bug
+squash c333 Updated CSS
+squash d444 Removed debug code
+```
+
+Save and close the editor.
+
+Git will then ask for a commit message.
+
+Provide a meaningful commit message:
+
+```text
+Implemented User Login Feature
+```
+
+Result:
+
+```text
+A --- E
+```
+
+Where E is a new commit containing all changes from the previous commits.
+
+---
+
+## Squash Merge in GitHub
+
+When creating a Pull Request, GitHub provides three merge options:
+
+```text
+Create a merge commit
+Squash and merge
+Rebase and merge
+```
+
+If you select **Squash and merge**, GitHub combines all commits from the feature branch into a single commit before merging it into the target branch.
+
+### Before Merge
+
+```text
+main
+ │
+ └── A
+
+feature
+ ├── B
+ ├── C
+ ├── D
+ └── E
+```
+
+### After Squash Merge
+
+```text
+main
+ │
+ ├── A
+ └── F
+```
+
+Where:
+
+```text
+F = Complete Feature Implementation
+```
+
+---
+
+## Advantages of Squashing
+
+### 1. Clean Commit History
+
+Instead of:
+
+```text
+fixed typo
+fixed typo again
+updated variable
+terraform fmt
+removed debug code
+```
+
+You get:
+
+```text
+Implemented Azure Landing Zone
+```
+
+### 2. Easier Code Reviews
+
+Reviewers can understand the entire feature through a single meaningful commit.
+
+### 3. Better Project Maintenance
+
+Future team members can quickly understand what changes were introduced.
+
+### 4. Professional Git History
+
+Most organizations prefer clean and organized commit histories in production repositories.
+
+---
+
+## Squash vs Normal Merge
+
+### Normal Merge
+
+```text
+Added login page
+Fixed validation bug
+Updated CSS
+Removed debug code
+Merge commit
+```
+
+History contains all intermediate commits.
+
+### Squash Merge
+
+```text
+Implemented User Login Feature
+```
+
+History contains only one meaningful commit.
+
+---
+
+## Important Interview Point
+
+Squashing does not simply hide commits.
+
+Git creates a completely new commit containing all the changes from the selected commits.
+
+Example:
+
+Before:
+
+```text
+A → B → C → D
+```
+
+After Squash:
+
+```text
+A → E
+```
+
+Where:
+
+- B, C, and D are combined.
+- E is a new commit.
+- E has a new commit hash.
+- All code changes are preserved.
+
+---
+
+## Real DevOps Example
+
+While developing Terraform code, a developer creates multiple commits:
+
+```text
+Created VNet
+Added Subnet
+Configured NSG
+Fixed Variable
+Terraform Formatting
+Removed Debug Output
+```
+
+Before merging to the main branch, these commits can be squashed into:
+
+```text
+Implemented Azure Network Infrastructure
+```
+
+This keeps the repository history clean and easy to understand.
+
+---
+
+## Summary
+
+- Git Squash combines multiple commits into a single commit.
+- It helps maintain a clean and professional Git history.
+- A new commit is created with a new commit hash.
+- All changes from the original commits are preserved.
+- Commonly used before merging feature branches into the main branch.
+- Frequently used through GitHub's "Squash and Merge" option or Interactive Rebase.

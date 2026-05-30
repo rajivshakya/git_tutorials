@@ -41,7 +41,7 @@
           <mxGeometry height="30" width="60" x="570" y="430" as="geometry" />
         </mxCell>
         <mxCell id="8JJgSllMfCTPrx9a4ufz-2" parent="1" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.github_code;pointerEvents=1;" value="" vertex="1">
-          <mxGeometry height="40" width="40" x="530" y="210" as="geometry" />
+          <mxGeometry height="30" width="40" x="530" y="210" as="geometry" />
         </mxCell>
         <mxCell id="8JJgSllMfCTPrx9a4ufz-16" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;rounded=0;fontStyle=1;fillColor=#f9f7ed;strokeColor=#36393d;" value="Local Folder" vertex="1">
           <mxGeometry height="30" width="105" x="210" y="200" as="geometry" />
