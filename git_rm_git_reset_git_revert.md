@@ -117,97 +117,346 @@ removes a file from Git tracking but keeps the file on the local system.
 
 ---
 
-# 2. git revert
+# Git Revert Explained with HEAD and Commit ID
 
-## Purpose
+## What is Git Revert?
 
-Used to undo a commit without rewriting history.
+Git Revert is used to undo the changes introduced by a specific commit without removing that commit from history.
 
-Git creates a new commit that reverses the changes introduced by a previous commit.
+Instead of deleting commits, Git creates a new commit that applies the opposite changes.
 
-This is the safest way to undo changes in a shared repository.
+Because history is preserved, Git Revert is considered safe for shared repositories.
 
 ---
 
-## Practical Example
+# Initial History
 
-Current History:
+Suppose we have the following commit history:
 
 ```text
-A --- B --- C
+C1 --- C2 --- C3 --- C4
+                      ↑
+                    HEAD
 ```
 
 Where:
 
 ```text
-B = Added Login Feature
-C = Added Buggy Code
+C1 = Initial Commit
+C2 = Added Login Feature
+C3 = Added Payment Feature
+C4 = Added Notification Feature
 ```
 
-Suppose commit C introduced a bug.
+Current file content:
+
+```text
+Login Feature
+Payment Feature
+Notification Feature
+```
+
+---
+
+# Reverting a Commit Using Commit ID
+
+Suppose we want to remove the Login Feature added in commit C2.
 
 Run:
 
 ```bash
-git revert C
+git revert C2
 ```
 
-or
+Git creates a new commit:
 
-```bash
-git revert HEAD
+```text
+C1 --- C2 --- C3 --- C4 --- C5
+```
+
+Where:
+
+```text
+C5 = Revert "Added Login Feature"
 ```
 
 ---
 
 ## Result
 
-Git creates a new commit:
+Current file content:
 
 ```text
-A --- B --- C --- D
+Payment Feature
+Notification Feature
 ```
 
-Where:
-
-```text
-D = Revert "Added Buggy Code"
-```
+The Login Feature has been removed.
 
 ---
 
 ## Important Point
 
-Commit C still exists.
+Git does NOT delete C2.
 
-History is preserved.
-
-Git simply creates another commit that reverses the changes.
-
----
-
-## Verify
-
-```bash
-git log --oneline
-```
-
-Output:
+History is preserved:
 
 ```text
-D Revert "Added Buggy Code"
-C Added Buggy Code
-B Added Login Feature
-A Initial Commit
+C1 --- C2 --- C3 --- C4 --- C5
+```
+
+Git simply creates a new commit that reverses the changes introduced by C2.
+
+---
+
+# Reverting a Commit Using HEAD
+
+Git allows us to reference commits relative to the current HEAD.
+
+Current history:
+
+```text
+C1 --- C2 --- C3 --- C4
+                      ↑
+                    HEAD
+```
+
+Mapping:
+
+```text
+HEAD    = C4
+HEAD~1  = C3
+HEAD~2  = C2
+HEAD~3  = C1
+```
+
+Since C2 is:
+
+```text
+HEAD~2
+```
+
+We can run:
+
+```bash
+git revert HEAD~2
+```
+
+This is equivalent to:
+
+```bash
+git revert C2
+```
+
+Result:
+
+```text
+C1 --- C2 --- C3 --- C4 --- C5
+```
+
+Where:
+
+```text
+C5 = Revert C2
 ```
 
 ---
 
-## Interview Point
+# Restoring a Reverted Commit
 
-Use git revert when working with shared repositories because it preserves history and safely undoes changes.
+Suppose after some time we realize that removing the Login Feature was a mistake.
+
+Current history:
+
+```text
+C1 --- C2 --- C3 --- C4 --- C5
+```
+
+Where:
+
+```text
+C5 = Revert C2
+```
+
+Current file content:
+
+```text
+Payment Feature
+Notification Feature
+```
+
+Login Feature is missing.
 
 ---
+
+# Revert the Revert Commit
+
+Run:
+
+```bash
+git revert C5
+```
+
+Git creates another commit:
+
+```text
+C1 --- C2 --- C3 --- C4 --- C5 --- C6
+```
+
+Where:
+
+```text
+C6 = Revert C5
+```
+
+---
+
+# Result
+
+Current file content:
+
+```text
+Login Feature
+Payment Feature
+Notification Feature
+```
+
+The Login Feature is back.
+
+---
+
+# What Actually Happened?
+
+### Original Commit
+
+```text
+C2 = Added Login Feature
+```
+
+### First Revert
+
+```text
+C5 = Removed Login Feature
+```
+
+### Second Revert
+
+```text
+C6 = Added Login Feature Again
+```
+
+This process is often called:
+
+```text
+Revert the Revert
+```
+
+---
+
+# Visual Representation
+
+## Original History
+
+```text
+C1 --- C2 --- C3 --- C4
+```
+
+---
+
+## Revert C2
+
+```bash
+git revert C2
+```
+
+Result:
+
+```text
+C1 --- C2 --- C3 --- C4 --- C5
+```
+
+Where:
+
+```text
+C5 = Revert C2
+```
+
+---
+
+## Restore C2
+
+```bash
+git revert C5
+```
+
+Result:
+
+```text
+C1 --- C2 --- C3 --- C4 --- C5 --- C6
+```
+
+Where:
+
+```text
+C6 = Revert C5
+```
+
+---
+
+# Why is Git Revert Safe?
+
+Because Git never removes commits.
+
+Even after reverting:
+
+```text
+C1 --- C2 --- C3 --- C4 --- C5
+```
+
+Commit C2 still exists.
+
+Git only adds new commits.
+
+This makes Git Revert safe for shared repositories and production environments.
+
+---
+
+# Interview Question
+
+## What happens when you run git revert?
+
+Git creates a new commit that applies the inverse of the selected commit's changes while preserving the existing commit history.
+
+---
+
+## What is the difference between git revert HEAD~2 and git revert <commit-id>?
+
+There is no functional difference.
+
+Example:
+
+```bash
+git revert HEAD~2
+```
+
+and
+
+```bash
+git revert C2
+```
+
+both revert commit C2.
+
+The only difference is how the commit is referenced:
+
+- HEAD~2 uses a relative reference.
+- Commit ID uses the actual commit hash.
+
+---
+
+# Interview One-Liner
+
+Git Revert does not remove commits from history. Instead, it creates a new commit that reverses the changes introduced by a selected commit. A reverted commit can be restored by reverting the revert commit.
 
 # 3. git reset --soft
 
