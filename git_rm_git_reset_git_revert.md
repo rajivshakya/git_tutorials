@@ -458,57 +458,95 @@ The only difference is how the commit is referenced:
 
 Git Revert does not remove commits from history. Instead, it creates a new commit that reverses the changes introduced by a selected commit. A reverted commit can be restored by reverting the revert commit.
 
-# 3. git reset --soft
+# Interview Question: What is the Difference Between git reset --soft and git reset --hard?
 
-## Purpose
+## Answer
 
-Used to move HEAD to a previous commit while keeping all changes staged.
+Both `git reset --soft` and `git reset --hard` are used to move the HEAD pointer to a previous commit.
 
-Think of it as:
+However, they handle the changes introduced by the removed commits differently.
 
-```text
-Remove Commit
-Keep Code
-Keep Staging
-```
+| Feature | git reset --soft | git reset --hard |
+|----------|-----------------|------------------|
+| Moves HEAD | Yes | Yes |
+| Removes Commits from History | Yes | Yes |
+| Keeps Changes | Yes | No |
+| Keeps Changes Staged | Yes | No |
+| Clears Working Directory | No | Yes |
+| Easy to Recommit Changes | Yes | No |
 
 ---
 
-## Practical Example
+# Initial Commit History
 
-Current History:
+Suppose we have the following commit history:
 
 ```text
-A --- B --- C
+C1 --- C2 --- C3 --- C4
+                      ↑
+                    HEAD
 ```
 
 Where:
 
 ```text
-C = Added Feature
+C1 = Initial Commit
+C2 = Added Login Feature
+C3 = Added Payment Feature
+C4 = Added Notification Feature
 ```
 
-Run:
+Current file content:
 
-```bash
-git reset --soft HEAD~1
+```text
+Login Feature
+Payment Feature
+Notification Feature
 ```
 
 ---
 
-## Result
+# Scenario 1: git reset --soft
 
-History:
+## Command
 
-```text
-A --- B
+```bash
+git reset --soft C2
 ```
 
-HEAD moves back to B.
+---
 
-However the changes from C remain staged.
+## What Happens?
 
-Check:
+Git moves HEAD from C4 to C2.
+
+Before:
+
+```text
+C1 --- C2 --- C3 --- C4
+                      ↑
+                    HEAD
+```
+
+After:
+
+```text
+C1 --- C2
+      ↑
+    HEAD
+```
+
+Commits C3 and C4 disappear from the branch history.
+
+---
+
+## What Happens to the Changes?
+
+The changes introduced by C3 and C4 are NOT deleted.
+
+Git places them into the staging area.
+
+Run:
 
 ```bash
 git status
@@ -517,88 +555,150 @@ git status
 Output:
 
 ```text
-Changes to be committed
+Changes to be committed:
 ```
 
 ---
 
-## Common Use Case
+## Current State
 
-Wrong commit message:
-
-```bash
-git commit -m "Fixd Bug"
-```
-
-Correct it:
-
-```bash
-git reset --soft HEAD~1
-
-git commit -m "Fixed Bug"
-```
-
----
-
-## Interview Point
-
-Soft reset removes commits but preserves changes in the staging area.
-
----
-
-# 4. git reset --hard
-
-## Purpose
-
-Used to move HEAD to a previous commit and permanently discard all changes.
-
-Think of it as:
+History:
 
 ```text
-Remove Commit
-Remove Code
-Remove Staging
+C1 --- C2
 ```
+
+File Content:
+
+```text
+Login Feature
+Payment Feature
+Notification Feature
+```
+
+Staging Area:
+
+```text
+Payment Feature
+Notification Feature
+```
+
+The code still exists.
+
+Only the commits were removed.
 
 ---
 
-## Practical Example
+## Recommit the Changes
 
-Current History:
+Since the changes are staged, we can create a new commit.
+
+```bash
+git commit -m "Combined Feature Commit"
+```
+
+Result:
 
 ```text
-A --- B --- C
+C1 --- C2 --- C5
 ```
 
 Where:
 
 ```text
-C = Experimental Feature
+C5 = Combined Feature Commit
 ```
 
-Run:
+Git combines the changes from C3 and C4 into a new commit.
+
+---
+
+## Common Use Cases
+
+### Fixing a Commit Message
+
+Wrong:
 
 ```bash
-git reset --hard HEAD~1
+git commit -m "Fixd Login Bug"
+```
+
+Correct:
+
+```bash
+git reset --soft HEAD~1
+
+git commit -m "Fixed Login Bug"
 ```
 
 ---
 
-## Result
+### Combining Multiple Commits
 
-History:
+Before:
 
 ```text
-A --- B
+C1 --- C2 --- C3 --- C4
 ```
 
-Commit C disappears.
+After:
 
-All code changes introduced by C disappear.
+```bash
+git reset --soft C2
+git commit -m "Single Combined Commit"
+```
 
-Working directory becomes clean.
+Result:
 
-Check:
+```text
+C1 --- C2 --- C5
+```
+
+---
+
+# Scenario 2: git reset --hard
+
+## Command
+
+```bash
+git reset --hard C2
+```
+
+---
+
+## What Happens?
+
+Git moves HEAD from C4 to C2.
+
+Before:
+
+```text
+C1 --- C2 --- C3 --- C4
+                      ↑
+                    HEAD
+```
+
+After:
+
+```text
+C1 --- C2
+      ↑
+    HEAD
+```
+
+Commits C3 and C4 disappear from history.
+
+---
+
+## What Happens to the Changes?
+
+Git deletes the changes introduced by C3 and C4.
+
+The staging area is cleared.
+
+The working directory is reset.
+
+Run:
 
 ```bash
 git status
@@ -612,151 +712,182 @@ nothing to commit, working tree clean
 
 ---
 
-## Common Use Case
+## Current State
 
-You created a commit purely for testing and want to completely discard it.
-
-```bash
-git reset --hard HEAD~1
-```
-
----
-
-## Warning
-
-Avoid using:
-
-```bash
-git reset --hard
-```
-
-on commits that have already been pushed to a shared repository.
-
----
-
-# Step-by-Step Comparison
-
-Suppose current history is:
+History:
 
 ```text
-A --- B --- C
+C1 --- C2
 ```
 
-Where:
+File Content:
 
 ```text
-C = Latest Commit
+Login Feature
+```
+
+The following changes are gone:
+
+```text
+Payment Feature
+Notification Feature
 ```
 
 ---
 
-## git rm --cached
+## Can We Recommit the Changes?
+
+No.
+
+Because the changes no longer exist in the staging area or working directory.
+
+Running:
 
 ```bash
-git rm --cached file.txt
+git commit -m "New Commit"
+```
+
+will not recreate C3 and C4.
+
+There is nothing left to commit.
+
+---
+
+# Recovery Using Reflog
+
+Even after a hard reset, Git often keeps references to recently removed commits.
+
+Run:
+
+```bash
+git reflog
+```
+
+Example:
+
+```text
+abc123 HEAD@{0}: reset: moving to C2
+def456 HEAD@{1}: commit: C4
+ghi789 HEAD@{2}: commit: C3
+```
+
+Restore the previous state:
+
+```bash
+git reset --hard def456
+```
+
+or
+
+```bash
+git reset --hard HEAD@{1}
 ```
 
 Result:
 
 ```text
-History unchanged
-
-A --- B --- C
+C1 --- C2 --- C3 --- C4
 ```
 
-File remains locally.
-
-Git stops tracking it.
+The commits are restored.
 
 ---
 
-## git revert
+# Visual Comparison
+
+## Before Reset
+
+```text
+C1 --- C2 --- C3 --- C4
+```
+
+---
+
+## After Soft Reset
+
+Command:
 
 ```bash
-git revert C
+git reset --soft C2
 ```
 
 Result:
 
 ```text
-A --- B --- C --- D
+C1 --- C2
 ```
 
-Where:
+Changes from:
 
 ```text
-D = Revert Commit
+C3 + C4
 ```
 
-History preserved.
+remain staged.
 
 ---
 
-## git reset --soft
+## After Hard Reset
+
+Command:
 
 ```bash
-git reset --soft HEAD~1
+git reset --hard C2
 ```
 
 Result:
 
 ```text
-A --- B
+C1 --- C2
 ```
 
-Changes from C remain staged.
-
----
-
-## git reset --hard
-
-```bash
-git reset --hard HEAD~1
-```
-
-Result:
+Changes from:
 
 ```text
-A --- B
+C3 + C4
 ```
 
-Changes from C are permanently deleted.
+are permanently removed from the working directory.
 
 ---
 
-# Which Command Should I Use?
+# Interview Question
 
-## Accidentally Added a Sensitive File
+## What is the difference between git reset --soft and git reset --hard?
+
+### git reset --soft
+
+- Moves HEAD to a previous commit.
+- Removes commits from branch history.
+- Preserves changes in the staging area.
+- Useful for rewriting or combining commits.
+
+Example:
 
 ```bash
-git rm --cached secrets.txt
+git reset --soft C2
 ```
 
 ---
 
-## Undo a Commit Already Pushed to GitHub
+### git reset --hard
+
+- Moves HEAD to a previous commit.
+- Removes commits from branch history.
+- Deletes changes from the staging area and working directory.
+- Useful for completely discarding unwanted commits.
+
+Example:
 
 ```bash
-git revert <commit-id>
+git reset --hard C2
 ```
 
 ---
 
-## Fix a Commit Message
+# Interview One-Liner
 
-```bash
-git reset --soft HEAD~1
-```
-
----
-
-## Completely Discard a Commit
-
-```bash
-git reset --hard HEAD~1
-```
-
----
+`git reset --soft` removes commits but preserves their changes in the staging area, whereas `git reset --hard` removes commits and permanently discards their changes from both the staging area and working directory.
 
 # Interview One-Liner
 
